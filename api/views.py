@@ -109,14 +109,22 @@ class PurchaseOrderDetailViewset(APIView, UpdateModelMixin):
         serializer = PurchaseOrderSerializer(po)
         return Response(serializer.data)
     
-    # def put(self, request, pk, format=None):
-    #     po = self.get_object(pk)
-    #     serializer = PurchaseOrderSerializer(po, data=request.data)
-    #     # import pdb; pdb.set_trace()
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, pk, format=None):
+        """
+        For partial update of any field, change the 'vendor' and the value attached to it.
+
+                {
+        "{": {},
+        "'vendor':{'id': 4},": {},
+        "}": {}
+        }
+        """
+        po = self.get_object(pk)
+        serializer = PurchaseOrderSerializer(po, data=request.data, partial= True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk, format=None):
         po = self.get_object(pk)

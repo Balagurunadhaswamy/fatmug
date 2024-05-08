@@ -20,6 +20,21 @@ class PurchaseOrder(models.Model):
     This model captures the details of each purchase order and is used to calculate various
     performance metrics.
     """
+    OP = 'Order Placed'
+    OC = 'Order Confirmed'
+    SH = 'Shipped'
+    DP = 'Dispatched'
+    OD = 'Out for delivery'
+    DD = 'Delivered'
+
+    STATUS_CHOICES = (
+        ('OP' , 'Order Placed'),
+        ('OC' , 'Order Confirmed'),
+        ('SH' , 'Shipped'),
+        ('DP' , 'Dispatched'),
+        ('OD' , 'Out for delivery'),
+        ('DD' , 'Delivered'),
+    )
 
     po_number = models.CharField(blank=True, max_length=150) # - Unique number identifying the PO.
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE) # - Link to the Vendor model.
@@ -27,10 +42,11 @@ class PurchaseOrder(models.Model):
     delivery_date = models.DateTimeField(blank=True) # - Expected or actual delivery date of the order.
     items = models.JSONField(blank=True) # - Details of items ordered.
     quantity = models.IntegerField(blank=True) # - Total quantity of items in the PO.
-    status = models.CharField(blank=True, max_length=100) # - Current status of the PO (e.g., pending, completed, canceled).
+    status = models.CharField(blank=True, choices=STATUS_CHOICES, default='OP', max_length=100) # - Current status of the PO (e.g., pending, completed, canceled).
     quality_rating = models.FloatField(null=True) # - Rating given to the vendor for this PO (nullable).
     issue_date = models.DateTimeField(blank=True) # - Timestamp when the PO was issued to the vendor.
     acknowledgment_date = models.DateTimeField(null=True) #, nullable - Timestamp when the vendor acknowledged the PO.
+    delivered_date = models.DateField(null=True, blank=True) #Date to record when the delivery is made.
 
 class HistoricalPerformance(models.Model):
     """
