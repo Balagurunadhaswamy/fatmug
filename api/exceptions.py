@@ -1,5 +1,5 @@
 """
-File to create  customm exceptions.
+File to create custom exceptions.
 """
 
 from rest_framework import exceptions
