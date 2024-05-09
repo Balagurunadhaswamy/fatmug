@@ -1,0 +1,164 @@
+## API Documentation
+
+### Vendor API Endpoints
+
+#### GET /vendors/
+
+- **Description**: Retrieve all vendors.
+- **Response**:
+  - 200 OK: Returns a list of all vendors.
+  - 404 Not Found: If no vendors are found.
+
+#### POST /vendors/
+
+- **Description**: Create a new vendor.
+- **Request Body**: Vendor details.
+- **Response**:
+  - 201 Created: If the vendor is successfully created.
+  - 400 Bad Request: If the request data is invalid.
+
+#### GET /vendors/{vendor_id}/
+
+- **Description**: Retrieve a specific vendor.
+- **Response**:
+  - 200 OK: Returns the details of the requested vendor.
+  - 404 Not Found: If the vendor does not exist.
+
+#### PUT /vendors/{vendor_id}/
+
+- **Description**: Update details of a specific vendor.
+- **Request Body**: Updated vendor details.
+- **Response**:
+  - 200 OK: Returns the updated vendor details.
+  - 400 Bad Request: If the request data is invalid.
+  - 404 Not Found: If the vendor does not exist.
+
+#### DELETE /vendors/{vendor_id}/
+
+- **Description**: Delete a specific vendor.
+- **Response**:
+  - 204 No Content: If the vendor is successfully deleted.
+  - 404 Not Found: If the vendor does not exist.
+
+### Purchase Order API Endpoints
+
+#### GET /purchase-orders/
+
+- **Description**: Retrieve all purchase orders.
+- **Response**:
+  - 200 OK: Returns a list of all purchase orders.
+  - 404 Not Found: If no purchase orders are found.
+
+#### POST /purchase-orders/
+
+- **Description**: Create a new purchase order.
+- **Request Body**: Purchase order details.
+- **Response**:
+  - 200 OK: Returns a success message after creating the purchase order.
+  - 400 Bad Request: If the request data is invalid.
+
+#### GET /purchase-orders/{po_number}/
+
+- **Description**: Retrieve a specific purchase order.
+- **Response**:
+  - 200 OK: Returns the details of the requested purchase order.
+  - 404 Not Found: If the purchase order does not exist.
+
+#### PUT /purchase-orders/{po_number}/
+
+- **Description**: Update details of a specific purchase order.
+- **Request Body**: Updated purchase order details.
+- **Response**:
+  - 200 OK: Returns the updated purchase order details.
+  - 400 Bad Request: If the request data is invalid.
+  - 404 Not Found: If the purchase order does not exist.
+
+#### DELETE /purchase-orders/{po_number}/
+
+- **Description**: Delete a specific purchase order.
+- **Response**:
+  - 204 No Content: If the purchase order is successfully deleted.
+  - 404 Not Found: If the purchase order does not exist.
+
+### Vendor Performance API Endpoints
+
+#### GET /vendors/{vendor_id}/performance/
+
+- **Description**: Retrieve performance metrics of a specific vendor.
+- **Response**:
+  - 200 OK: Returns the performance metrics of the requested vendor.
+  - 404 Not Found: If the vendor does not exist.
+
+#### PUT /vendors/{vendor_id}/acknowledge/
+
+- **Description**: Acknowledge a specific vendor.
+- **Response**:
+  - 200 OK: Returns success message after acknowledging the vendor.
+
+---
+
+## Exceptions
+
+### DataNotFound
+
+- **Status Code**: 404
+- **Description**: Raised when the requested data is not found.
+
+### PermissionDenied
+
+- **Status Code**: 401
+- **Description**: Raised when the user is not authorized to access the resource.
+
+### BadRequest
+
+- **Status Code**: 400
+- **Description**: Raised when the provided data is invalid.
+
+### NoContent
+
+- **Status Code**: 204
+- **Description**: Raised when the requested operation is successful but has no content.
+
+### Created
+
+- **Status Code**: 201
+- **Description**: Raised when a new resource is successfully created.
+
+---
+
+## Serializer Documentation
+
+### VendorSerializer
+
+- **Fields**:
+  - id
+  - name
+  - contact_details
+  - address
+  - vendor_code
+  - on_time_delivery_rate
+  - quality_rating_avg
+  - average_response_time
+  - fulfillment_rate
+
+### PurchaseOrderSerializer
+
+- **Fields**:
+  - po_number
+  - vendor
+  - order_date
+  - delivery_date
+  - items
+  - quantity
+  - status
+  - quality_rating
+  - issue_date
+  - delivered_date
+
+### VendorPerformanceSerializer
+
+- **Fields**:
+  - on_time_delivery_rate
+  - quality_rating_avg
+  - average_response_time
+  - fulfillment_rate

@@ -35,7 +35,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         if validated_data['status'] == 'DD':
             data = PurchaseOrder.objects.filter(vendor=instance.vendor, status='DD') 
             del_rate = len(data)/len(data.filter(delivered_date__lte=F('delivery_date'))) #delivery rate calculation
-            avg_quality_rating = PurchaseOrder.objects.filter(vendor__id=3, status='DD').aggregate(Avg("quality_rating", default=0)) #Average Quality  calculation
+            avg_quality_rating = PurchaseOrder.objects.filter(vendor__id=3, status='DD').aggregate(Avg("quality_rating", default=1)) #Average Quality  calculation
             Vendor.objects.filter(id=instance.vendor.id).update(on_time_delivery_rate=del_rate, quality_rating_avg=avg_quality_rating.get('quality_rating__avg'), fulfillment_rate=fulfilment_rate)
         elif validated_data['status'] == 'OC':
             #Average response time calculation
@@ -46,3 +46,9 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         else:
             Vendor.objects.filter(id=instance.vendor.id).update(fulfillment_rate=fulfilment_rate)
         return instance
+    
+class VendorPerformanceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Vendor
+        fields =  ['on_time_delivery_rate', 'quality_rating_avg', 'average_response_time', 'fulfillment_rate']

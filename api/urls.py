@@ -7,4 +7,5 @@ urlpatterns = [
     path('vendor/<int:pk>/', views.VendorDetailViewset.as_view()),
     path('purchase_order/', views.PurchaseOrderTrackingViewset.as_view()),
     path('purchase_order/<int:pk>/', views.PurchaseOrderDetailViewset.as_view()),
+    path('vendors/<int:pk>/performance', views.VendorPerformanvceViewset.as_view()),
 ]

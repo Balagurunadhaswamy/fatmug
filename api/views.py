@@ -3,17 +3,21 @@ from .models  import Vendor, HistoricalPerformance, PurchaseOrder
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import VendorSerializer, PurchaseOrderSerializer
+from .serializers import VendorSerializer, PurchaseOrderSerializer, VendorPerformanceSerializer
 from django.http import Http404
 from django.http import JsonResponse
 from rest_framework.mixins import UpdateModelMixin
 from django.db.models import Q
+from .exceptions import DataNotFound, PermissionDenied, BadRequest, NoContent, Created
 
 class VendorViewset(APIView):
     def get(self, request, format=None):
         data = Vendor.objects.all()
         serializer = VendorSerializer(data, many=True)
-        return Response(serializer.data)
+        if len(serializer.data) == 0:
+            raise DataNotFound
+        else:
+            return Response(serializer.data)
     
 
     def post(self, request, format=None):
@@ -21,8 +25,8 @@ class VendorViewset(APIView):
         serializer = VendorSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            raise Created
+        raise BadRequest
 
 
 class VendorDetailViewset(APIView):
@@ -44,18 +48,21 @@ class VendorDetailViewset(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise BadRequest
 
     def delete(self, request, pk, format=None):
         vendor = self.get_object(pk)
         vendor.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        raise NoContent
     
 class PurchaseOrderTrackingViewset(APIView):
     def get(self, request, format=None):
         data = PurchaseOrder.objects.all()
         serializer = PurchaseOrderSerializer(data, many=True)
-        return Response(serializer.data)
+        if len(serializer.data) == 0:
+            raise DataNotFound
+        else:
+            return Response(serializer.data)
     
     def post(self, request, format=None):
         """
@@ -102,12 +109,15 @@ class PurchaseOrderDetailViewset(APIView, UpdateModelMixin):
         try:
             return PurchaseOrder.objects.get(id=pk)
         except PurchaseOrder.DoesNotExist:
-            raise Http404
+            raise DataNotFound
         
     def get(self, request, pk, format=None):
         po = self.get_object(pk)
         serializer = PurchaseOrderSerializer(po)
-        return Response(serializer.data)
+        if len(serializer.data) == 0:
+            raise DataNotFound
+        else:
+            return Response(serializer.data)
     
     def put(self, request, pk, format=None):
         """
@@ -119,14 +129,34 @@ class PurchaseOrderDetailViewset(APIView, UpdateModelMixin):
         "}": {}
         }
         """
-        po = self.get_object(pk)
-        serializer = PurchaseOrderSerializer(po, data=request.data, partial= True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # import pdb;pdb.set_trace()
+        if  request.user.is_superuser == True:
+            po = self.get_object(pk)
+            serializer = PurchaseOrderSerializer(po, data=request.data, partial= True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            raise BadRequest
+        else:
+            raise PermissionDenied()
     
     def delete(self, request, pk, format=None):
         po = self.get_object(pk)
         po.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        raise NoContent
+    
+
+class VendorPerformanvceViewset(APIView):
+
+    def get(self, request, pk, format=None):
+        data = Vendor.objects.filter(id=pk)
+        serializer = VendorPerformanceSerializer(data, many=True)
+        if len(serializer.data) == 0:
+            raise DataNotFound
+        else:
+            # import pdb;pdb.set_trace()
+            return Response(serializer.data)
+        
+class VendorAcknowledgeViewset(APIView):
+    def put(self, request, pk, format=None):
+        import pdb;  pdb.set_trace()
